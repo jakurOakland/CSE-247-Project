@@ -33,6 +33,7 @@ public class ChatServer {
     private static final HashMap<String, Object> clients = new HashMap<>();
     //Holds the menus for the special clients, i.e. the restaurants. 
     private static final HashMap<String, Menu> restaurantMenus = new HashMap<>();
+    private static final HashMap<String, Boolean> restaurants = new HashMap<>();
    
     
     /**
@@ -40,9 +41,8 @@ public class ChatServer {
      * spawns handler threads.
      */
     public static void main(String[] args) throws Exception {
-                        for(int i = 2; i <= 10; i++) {
-                    System.out.println(i);
-                }
+        restaurants.put("ChickfilA", Boolean.FALSE);
+        restaurants.put("Subway", Boolean.FALSE);
         System.out.println("The chat server is running.");
         ServerSocket listener = new ServerSocket(PORT);
         try {
@@ -54,6 +54,13 @@ public class ChatServer {
         } finally {
             listener.close();
             System.out.println("Client closed connection");
+        }
+    }
+    
+    private static void broadcast(String string) throws IOException{
+        for (DataOutputStream writer : writers.values()) {
+            writer.writeUTF(string);
+                       
         }
     }
 
@@ -110,10 +117,13 @@ public class ChatServer {
                         if (!nameSet.contains(name)) {
                             nameSet.add(name);
                             clients.put(name, socket);
-                           System.out.println(clients.toString());
-                           for(int i = 0; i < nameSet.size(); i++){
+                            System.out.println(clients.toString());
+                            for(int i = 0; i < nameSet.size(); i++){
                                System.out.println(nameSet.toString());
-                           }
+                            }
+                            if(restaurants.containsKey(name)) {
+                                restaurants.put(name, true);
+                            }
                            break;
                         }
                     }
@@ -122,7 +132,7 @@ public class ChatServer {
 
                 // Now that a successful name has been chosen, add the
                 // socket's data output to the set of all writers
-                
+
                 if(name.equals("ChickfilA") || name.equals("Subway")){
                 dout.writeUTF("Hello: " + name + " wait for orders to come in");
                 }else{
@@ -142,20 +152,25 @@ public class ChatServer {
                         return;
                     }
                     else {
-                        System.out.print(input);
+                        System.out.println(input);
                     }
                     
-                    if(input.contains("ChickfilA")) {
-                        System.out.println(input);
-                        String output = input.replaceAll(name, name);
-                        DataOutputStream stream = writers.get("ChickfilA");
-                        stream.writeUTF(output);
-                        stream.flush();
+                    String restaurantName = input.split(",")[0];
+                    if(restaurants.containsKey(restaurantName)) {
+                        if(restaurants.get(restaurantName)) {
+                            System.out.println("Made it here");
+                            DataOutputStream stream = writers.get(restaurantName);
+                            String output = input.replaceAll(name, name);
+                            stream.writeUTF(output);
+                            stream.flush();
+                        }
+                        else {
+                            dout.writeUTF("I'm sorry, but that restaurant's"
+                                    + " service is currently unavailable.");
+                            dout.flush();
+                        }
                     }
-                    for (DataOutputStream writer : writers.values()) {
-                        writer.writeUTF(name + ": " + input);
-                       
-                    }
+
                 }
             } catch (IOException e) {
                 System.out.println(e);
@@ -164,6 +179,9 @@ public class ChatServer {
                 // writer from the sets, and close its socket.
                 if (name != null) {
                     nameSet.remove(name);
+                    if(restaurants.containsKey(name)) {
+                        restaurants.put(name, Boolean.FALSE);
+                    }
                 }
                 if (dout != null) {
                     writers.remove(name);

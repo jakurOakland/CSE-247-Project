@@ -165,7 +165,6 @@ public static ArrayList<String> customers = new ArrayList<String>();
                     System.out.println(customers.get(i));
                     os.flush();
                 }else if(!orderready.getText().equals(customers.get(i))){
-                    System.out.println("FINLAND!");
                     break;
                 }
             }
@@ -232,14 +231,12 @@ public static ArrayList<String> customers = new ArrayList<String>();
               
                 msgin = is.readUTF();
                 //if the message has any of these in it printthe message
-                if(msgin.equals("please submit name")){
+                if(msgin.equals("Please submit name")){
                     System.out.println(msgin);
                     break;
-                //if it does not then print waiting
                 }
-                else if(!msgin.equals("please submit name")){
-                    break;
-             
+                else { //Should not fire
+                    System.out.println("Awaiting response from server");
                 }
          
             }
@@ -250,16 +247,14 @@ public static ArrayList<String> customers = new ArrayList<String>();
                 //if the message starts with hello then print the message
                 if(msgin.startsWith("Hello")){
                     System.out.println(msgin);
-
-                    //if not then break
-                } else {        
                     break;
-                }
+                } 
             }
           
             while(!msgin.equals("exit")){
-                String[] substrings = msgin.split(",");
+                System.out.println("Awaiting clients");
                 msgin = is.readUTF();
+                String[] substrings = msgin.split(",");
                 //if the message coming in contains the restaurant name and does not contain the pick up message then print the message
                 if(msgin.contains(place) && 
                         !msgin.contains("your order is ready for pickup")){
@@ -268,9 +263,9 @@ public static ArrayList<String> customers = new ArrayList<String>();
                     customers.add(substrings[1]);
                     System.out.println(customers.toString());
                     //if it does not contain the returaunt name it does contain the pick up message then print nothing
-                } else if(!msgin.contains(place) || 
-                    msgin.contains("your order is ready for pickup")){
-                    System.out.println();
+                } else {
+                    System.out.println("Spurious message received: ");
+                    System.out.println(msgin);
                 }
             }         
         }catch(UnknownHostException e){
