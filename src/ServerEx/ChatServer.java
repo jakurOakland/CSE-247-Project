@@ -134,14 +134,14 @@ public class ChatServer {
                 // socket's data output to the set of all writers
 
                 if(name.equals("ChickfilA") || name.equals("Subway")){
-                dout.writeUTF("Hello: " + name + " wait for orders to come in");
-                }else{
+                    dout.writeUTF("Hello: " + name + 
+                            " wait for orders to come in");
+                } else {
                     dout.writeUTF("Hello " + name + " you can order now");
                 }
                 System.out.println("Sent hello message to " + name );
                 dout.flush();
                 writers.put(name, dout);
-                
                 
 
                 // Accept messages from this client and handles them
@@ -151,23 +151,30 @@ public class ChatServer {
                     if (input == null) {
                         return;
                     }
-                    else {
-                        System.out.println(input);
-                    }
                     
-                    String restaurantName = input.split(",")[0];
-                    if(restaurants.containsKey(restaurantName)) {
-                        if(restaurants.get(restaurantName)) {
-                            System.out.println("Made it here");
-                            DataOutputStream stream = writers.get(restaurantName);
-                            String output = input.replaceAll(name, name);
-                            stream.writeUTF(output);
-                            stream.flush();
+                    if(restaurants.containsKey(name)) {
+                        if(input.contains("PICKUP")) {
+                            String customerName = input.split(":")[0];
+                            DataOutputStream stream = writers.get(customerName);
+                            String output = (String) input;
+                            stream.writeUTF(customerName + " your order is " +
+                                    "ready for pickup.");
                         }
-                        else {
-                            dout.writeUTF("I'm sorry, but that restaurant's"
-                                    + " service is currently unavailable.");
-                            dout.flush();
+                    }
+                    else {
+                    String restaurantName = input.split(",")[0];
+                        if(restaurants.containsKey(restaurantName)) {
+                            if(restaurants.get(restaurantName)) {
+                                DataOutputStream stream = writers.get(restaurantName);
+                                String output = (String) input;
+                                stream.writeUTF(output);
+                                stream.flush();
+                            }
+                            else {
+                                dout.writeUTF("I'm sorry, but that restaurant's"
+                                        + " service is currently unavailable.");
+                                dout.flush();
+                            }
                         }
                     }
 

@@ -159,7 +159,7 @@ public static ArrayList<String> customers = new ArrayList<String>();
         try{
             for(int i = 0; i < customers.size(); i++){
                 if(orderready.getText().equals(customers.get(i))){
-                    ready = orderready.getText().trim() + " your order is ready for pickup";
+                    ready = orderready.getText().trim() + ": PICKUP";
                     os.writeUTF(ready);
                     //customers.remove(i);
                     System.out.println(customers.get(i));
