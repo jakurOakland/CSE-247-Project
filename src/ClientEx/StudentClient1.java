@@ -19,10 +19,9 @@ import java.net.UnknownHostException;
  */
 
 public class StudentClient1 extends javax.swing.JFrame {
-    Menu menu;
+    static Menu menu;
     public static String name = "";
-    //public static ArrayList<String> order = new ArrayList<String>();
-        //client socket
+    
     private static Socket clientSocket = null; 
     //the output stream
     private static DataOutputStream os = null;
@@ -31,6 +30,8 @@ public class StudentClient1 extends javax.swing.JFrame {
 
     private static BufferedReader inputline = null;
     private static boolean closed = false;
+    private static Menu subwayMenu;
+    private static Menu chickFilAMenu;
     /**
      * Creates new form TryClient
      */
@@ -41,19 +42,26 @@ public class StudentClient1 extends javax.swing.JFrame {
             "fries description", 2.00);
         MenuItem m3 = new MenuItem(3, 
             "fountain drink", "free refills", 2.00);
-        menu = new Menu();
-        menu.add(m1);
-        menu.add(m2);
-        menu.add(m3);
+        chickFilAMenu = new Menu();
+        chickFilAMenu.add(m1);
+        chickFilAMenu.add(m2);
+        chickFilAMenu.add(m3);
+        m1 = new MenuItem(1, "subway sandwich", "description", 2.50);
+        m2 = new MenuItem(2, "fountain drink", "free refills", 2.00);
+        subwayMenu = new Menu();
+        subwayMenu.add(m1);
+        subwayMenu.add(m2);
+        menu = chickFilAMenu;
         initComponents();
-        setorders();
+        setOrders();
     }
     
-    public void setorders(){
-
+    private void setOrders(){
+       String string = "";
        for(MenuItem m : menu.items.values()){
-           orders.setText(m.toString());
+           string += m.toString();
        }
+       orders.setText(string);
     }
 
     /**
@@ -212,7 +220,14 @@ public class StudentClient1 extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void foodplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_foodplaceActionPerformed
-        // TODO add your handling code here:
+        String s = (String) foodplace.getSelectedItem();
+        if(s.equals("ChickfilA") && menu != chickFilAMenu) {
+            menu = chickFilAMenu;
+            setOrders();
+        } else if(s.equals("Subway") && menu != subwayMenu) {
+            menu = subwayMenu;
+            setOrders();
+        }
     }//GEN-LAST:event_foodplaceActionPerformed
 
     private void ordernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ordernameActionPerformed
@@ -278,7 +293,6 @@ public class StudentClient1 extends javax.swing.JFrame {
         }
         catch(IOException e){
             System.out.println(e);
-            System.out.println("Jar Jar Binks!");
         }
     
     }

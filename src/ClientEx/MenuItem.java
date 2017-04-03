@@ -53,7 +53,7 @@ public class MenuItem {
         return "Item number: " + index +
                 "\n" + "Dish: "+ food + 
                 "\n" +  "Description: " + description + 
-                "\n" + "Price: " + price + "\n" + "\n";
+                "\n" + "Price: $" + price + "\n" + "\n";
     }
     
 }
