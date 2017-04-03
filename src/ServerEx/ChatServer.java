@@ -171,7 +171,6 @@ public class ChatServer {
                         System.out.println(restaurantName);
                         if(restaurants.containsKey(restaurantName)) {
                             if(restaurants.get(restaurantName)) {
-                                System.out.println("What the hell?");
                                 DataOutputStream stream = writers.get(restaurantName);
                                 String output = (String) input;
                                 stream.writeUTF(output);

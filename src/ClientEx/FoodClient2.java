@@ -20,12 +20,14 @@ import javax.swing.JTextArea;
  * @author elijahhunt93
  */
 public class FoodClient2 extends javax.swing.JFrame {
-private static Socket clientSocket = null;
-private static DataOutputStream os = null;
-private static DataInputStream is = null;
-private static BufferedReader inputline;
-public static String place;
-public static ArrayList<String> customers = new ArrayList<String>();
+    public static String place;
+    public static ArrayList<String> customers = new ArrayList<String>();
+    private static Socket clientSocket = null;
+    private static DataOutputStream os = null;
+    private static DataInputStream is = null;
+    private static BufferedReader inputline;
+    private static ArrayList<String> orderStrings = new ArrayList<>();
+
     /**
      * Creates new form TryClient2
      */
@@ -47,7 +49,7 @@ public static ArrayList<String> customers = new ArrayList<String>();
         jScrollPane1 = new javax.swing.JScrollPane();
         orders = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        confirmNameButton = new javax.swing.JButton();
         foodplace = new javax.swing.JComboBox<>();
         orderready = new javax.swing.JTextField();
         orderReadyButton = new javax.swing.JButton();
@@ -62,10 +64,10 @@ public static ArrayList<String> customers = new ArrayList<String>();
 
         jLabel1.setText("Enter Name");
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        confirmNameButton.setText("Confirm Name");
+        confirmNameButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                confirmNameButtonActionPerformed(evt);
             }
         });
 
@@ -101,7 +103,7 @@ public static ArrayList<String> customers = new ArrayList<String>();
                                 .addComponent(foodplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(2, 2, 2)
-                                .addComponent(jButton1)))
+                                .addComponent(confirmNameButton)))
                         .addGap(0, 63, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,7 +128,7 @@ public static ArrayList<String> customers = new ArrayList<String>();
                     .addComponent(jLabel1)
                     .addComponent(foodplace, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
+                .addComponent(confirmNameButton)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(orderready, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -139,7 +141,7 @@ public static ArrayList<String> customers = new ArrayList<String>();
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void confirmNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmNameButtonActionPerformed
         // TODO add your handling code here:
         String name = "";
         try{
@@ -151,20 +153,22 @@ public static ArrayList<String> customers = new ArrayList<String>();
         }catch(Exception e){
             
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_confirmNameButtonActionPerformed
 
     private void orderReadyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_orderReadyButtonActionPerformed
         // TODO add your handling code here:
         String ready = "";
         try{
             for(int i = 0; i < customers.size(); i++){
-                if(orderready.getText().equals(customers.get(i))){
+                String customer = customers.get(i);
+                if(orderready.getText().equals(customer)){
                     ready = orderready.getText().trim() + ": PICKUP";
                     os.writeUTF(ready);
                     //customers.remove(i);
-                    System.out.println(customers.get(i));
+                    System.out.println(customer);
                     os.flush();
-                }else if(!orderready.getText().equals(customers.get(i))){
+                    orderStrings.removeIf(str -> str.split(",")[1].equals(customer));
+                    updateOrderBox();
                     break;
                 }
             }
@@ -259,7 +263,9 @@ public static ArrayList<String> customers = new ArrayList<String>();
                 if(msgin.contains(place) && 
                         !msgin.contains("your order is ready for pickup")){
                     System.out.println(msgin);
-                    orders.setText(orders.getText().trim() + "\n" + msgin);
+                    orderStrings.add(msgin);
+                    //orders.setText(orders.getText().trim() + "\n" + msgin);
+                    updateOrderBox();
                     customers.add(substrings[1]);
                     System.out.println(customers.toString());
                     //if it does not contain the returaunt name it does contain the pick up message then print nothing
@@ -276,10 +282,17 @@ public static ArrayList<String> customers = new ArrayList<String>();
         }
     
     }
+    
+    private static void updateOrderBox() {
+        String string = "";
+        string = orderStrings.stream().map((order) -> 
+                (order + "\n")).reduce(string, String::concat);
+        orders.setText(string);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton confirmNameButton;
     private static javax.swing.JComboBox<String> foodplace;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
