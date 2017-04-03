@@ -90,6 +90,7 @@ public class ChatServer {
          * the client in a global set, then continually gets inputs and sends
          * them to their appropriate locations. 
          */
+        @Override
         public void run() {
             try {
 
@@ -154,23 +155,32 @@ public class ChatServer {
                     
                     if(restaurants.containsKey(name)) {
                         if(input.contains("PICKUP")) {
-                            String customerName = input.split(":")[0];
-                            DataOutputStream stream = writers.get(customerName);
-                            stream.writeUTF(customerName + " your order is " +
+                            try {
+                                String customerName = input.split(":")[0];
+                                DataOutputStream stream = writers.get(customerName);
+                                stream.writeUTF(customerName + " your order is " +
                                     "ready for pickup.");
+                            } catch(Exception e) {
+                                System.out.println("Invalid pickup string");
+                            }
+
                         }
                     }
                     else {
                         String restaurantName = input.split(",")[0];
+                        System.out.println(restaurantName);
                         if(restaurants.containsKey(restaurantName)) {
                             if(restaurants.get(restaurantName)) {
+                                System.out.println("What the hell?");
                                 DataOutputStream stream = writers.get(restaurantName);
                                 String output = (String) input;
                                 stream.writeUTF(output);
                                 stream.flush();
+                                dout.writeUTF("Order successfully placed.");
+                                dout.flush();
                             }
                             else {
-                                dout.writeUTF("I'm sorry, but that restaurant's"
+                                dout.writeUTF("I'm sorry, but that restaurant\'s"
                                         + " service is currently unavailable.");
                                 dout.flush();
                             }

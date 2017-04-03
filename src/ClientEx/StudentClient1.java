@@ -32,6 +32,7 @@ public class StudentClient1 extends javax.swing.JFrame {
     private static boolean closed = false;
     private static Menu subwayMenu;
     private static Menu chickFilAMenu;
+    private boolean nameSubmitted = false;
     /**
      * Creates new form TryClient
      */
@@ -76,11 +77,11 @@ public class StudentClient1 extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         orders = new javax.swing.JTextArea();
         ordername = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        submitNameButton = new javax.swing.JButton();
         SendName = new javax.swing.JLabel();
         itemnumber = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        orderButton = new javax.swing.JButton();
         foodplace = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -96,10 +97,10 @@ public class StudentClient1 extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Submit Name");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        submitNameButton.setText("Submit Name");
+        submitNameButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                submitNameButtonActionPerformed(evt);
             }
         });
 
@@ -114,10 +115,10 @@ public class StudentClient1 extends javax.swing.JFrame {
 
         jLabel1.setText("What Item Do You Want");
 
-        jButton2.setText("Order Now");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        orderButton.setText("Order Now");
+        orderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                orderButtonActionPerformed(evt);
             }
         });
 
@@ -140,13 +141,13 @@ public class StudentClient1 extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton1)
+                                    .addComponent(submitNameButton)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(SendName)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(ordername, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel1)
-                                    .addComponent(jButton2)))
+                                    .addComponent(orderButton)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(41, 41, 41)
                                 .addComponent(itemnumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -166,7 +167,7 @@ public class StudentClient1 extends javax.swing.JFrame {
                             .addComponent(ordername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(SendName))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
+                        .addComponent(submitNameButton)
                         .addGap(63, 63, 63)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -174,7 +175,7 @@ public class StudentClient1 extends javax.swing.JFrame {
                         .addGap(12, 12, 12)
                         .addComponent(itemnumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2))
+                        .addComponent(orderButton))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
@@ -182,7 +183,7 @@ public class StudentClient1 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void submitNameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitNameButtonActionPerformed
         // TODO add your handling code here:
         
         try{
@@ -192,32 +193,34 @@ public class StudentClient1 extends javax.swing.JFrame {
             os.flush();
         }catch(Exception e){
             
+        } finally {
+            nameSubmitted = true;
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_submitNameButtonActionPerformed
 
     private void itemnumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemnumberActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_itemnumberActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void orderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_orderButtonActionPerformed
         // TODO add your handling code here:
         String order = "";
-        try{
-//            for(MenuItem m : menu.items.values()){
-//                if((int) itemnumber.getSelectedItem() == m.getIndex()) {
-//                    order =  foodplace.getSelectedItem() + "\name" + m.toString();
-//                    os.writeUTF(order);
-//                    os.flush();
-//                }
-//            }
-            MenuItem menuItem = menu.items.get(Integer.parseInt(itemnumber.getSelectedItem().toString()));
-            order = foodplace.getSelectedItem() + "," + name + "," + menuItem.getIndex();
-            os.writeUTF(order);
-            os.flush();
-        }catch(Exception e){
-            System.out.println("Error adding item to order." + "   " + e);
+        if(nameSubmitted) {
+            try{
+
+                MenuItem menuItem = menu.items.get(Integer.parseInt
+                    (itemnumber.getSelectedItem().toString()));
+                order = foodplace.getSelectedItem() + "," + name + "," + 
+                    menuItem.getIndex();
+                os.writeUTF(order);
+                os.flush();
+            }catch(Exception e){
+                System.out.println("Error adding item to order." + "   " + e);
+            }
+        } else {
+            System.out.println("You must first submit your name!");
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_orderButtonActionPerformed
 
     private void foodplaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_foodplaceActionPerformed
         String s = (String) foodplace.getSelectedItem();
@@ -284,7 +287,7 @@ public class StudentClient1 extends javax.swing.JFrame {
                     System.out.println(msgin);
 
                 } else {
-                    System.out.println();
+                    System.out.println(msgin);
                 }
             }
             
@@ -301,12 +304,12 @@ public class StudentClient1 extends javax.swing.JFrame {
     private javax.swing.JLabel SendName;
     private javax.swing.JComboBox<String> foodplace;
     private javax.swing.JComboBox<String> itemnumber;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton orderButton;
     private javax.swing.JTextField ordername;
     private static javax.swing.JTextArea orders;
+    private javax.swing.JButton submitNameButton;
     // End of variables declaration//GEN-END:variables
 
 
