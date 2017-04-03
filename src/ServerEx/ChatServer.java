@@ -156,13 +156,12 @@ public class ChatServer {
                         if(input.contains("PICKUP")) {
                             String customerName = input.split(":")[0];
                             DataOutputStream stream = writers.get(customerName);
-                            String output = (String) input;
                             stream.writeUTF(customerName + " your order is " +
                                     "ready for pickup.");
                         }
                     }
                     else {
-                    String restaurantName = input.split(",")[0];
+                        String restaurantName = input.split(",")[0];
                         if(restaurants.containsKey(restaurantName)) {
                             if(restaurants.get(restaurantName)) {
                                 DataOutputStream stream = writers.get(restaurantName);
